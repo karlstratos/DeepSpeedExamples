@@ -53,7 +53,7 @@ Side note: I didn't export `CUDAPATH` but it worked, which is weird according to
 (deepspeed-examples) jl2529@one:~/repositories/DeepSpeedExamples/HelloDeepSpeed$ CUDAPATH=/usr/local/cuda
 (deepspeed-examples) jl2529@one:~/repositories/DeepSpeedExamples/HelloDeepSpeed$ echo ${CUDAPATH}
 /usr/local/cuda
-``
+```
 
 ### Apex
 
