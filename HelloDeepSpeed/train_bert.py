@@ -108,8 +108,8 @@ def masking_function(
     low = 1
     high = len(subword_mask) - 1
     mask_choices = np.arange(low, high)
-    num_subwords_to_mask = max(
-        int((mask_prob * (high - low)) + np.random.rand()), 1)
+    num_subwords_to_mask = max(  #             v [0, 1)
+        int((mask_prob * (high - low)) + np.random.rand()), 1)  # at least 1, as many as ceil(0.15[#])
     subword_mask[np.random.choice(mask_choices,
                                   num_subwords_to_mask,
                                   replace=False)] = True
@@ -247,6 +247,7 @@ def create_data_iterator(
         unmask_replace_prob=unmask_replace_prob,
         max_length=max_seq_length,
     )
+
     dataset = WikiTextMLMDataset(wikitext_dataset, masking_function_partial)
     collate_fn_partial = partial(collate_function,
                                  pad_token_id=tokenizer.pad_token_id)
@@ -269,7 +270,7 @@ class RobertaLMHeadWithMaskedPredict(RobertaLMHead):
                  embedding_weight: Optional[torch.Tensor] = None) -> None:
         super(RobertaLMHeadWithMaskedPredict, self).__init__(config)
         if embedding_weight is not None:
-            self.decoder.weight = embedding_weight
+            self.decoder.weight = embedding_weight  # "decoder" is projection matrix
 
     def forward(  # pylint: disable=arguments-differ
         self,
@@ -454,7 +455,8 @@ def create_experiment_dir(checkpoint_dir: pathlib.Path,
         current_time.second,
         get_unique_identifier(),
     )
-    exp_dir = checkpoint_dir / expname
+    # With Path, you can / stuff
+    exp_dir = checkpoint_dir / expname  # [checkpoint_dir]/bert_pretrain.2023.3.31.5.10.14.addjtvxg
     exp_dir.mkdir(exist_ok=False)
     hparams_file = exp_dir / "hparams.json"
     with hparams_file.open("w") as handle:
@@ -660,7 +662,8 @@ def train(
             "num_iterations": num_iterations,
             "checkpoint_every": checkpoint_every,
         }
-        exp_dir = create_experiment_dir(checkpoint_dir, all_arguments)
+
+        exp_dir = create_experiment_dir(checkpoint_dir, all_arguments)  # [checkpoint_dir]/bert_pretrain.2023.3.31.5.10.14.addjtvxg
         logger.info(f"Experiment Directory created at {exp_dir}")
     else:
         logger.info("Loading from Experiment Directory")
